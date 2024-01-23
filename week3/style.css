@@ -1,0 +1,94 @@
+/* style.css */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 60%;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.accounts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.account {
+    width: 100%;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.account h2 {
+    margin-bottom: 5px;
+}
+
+.transactions {
+    list-style-type: none;
+    padding: 0;
+}
+
+.transaction {
+    margin-bottom: 5px;
+}
+
+.balance {
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+.balance span {
+    margin-right: 10px;
+}
+
+.summary {
+    margin-top: 10px;
+}
+
+.logout-timer {
+    margin-top: 10px;
+    font-size: 0.8em;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.movements {
+    width: 60%;
+}
+
+.functions {
+    width: 40%;
+}
+
+.other-movements {
+    width: 100%;
+    margin-top: 20px;
+}

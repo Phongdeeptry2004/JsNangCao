@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bankist App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .logo {
+        height: 40px;
+    }
+
+    .balance {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+    .amount {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+
+    .transaction-list {
+        margin-bottom: 20px;
+    }
+
+    .title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .date {
+        font-size: 0.8rem;
+        color: #777;
+    }
+
+    .description {
+        font-size: 0.9rem;
+    }
+
+    .in {
+        color: green;
+    }
+
+    .out {
+        color: red;
+    }
+
+    .value {
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    .buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .button {
+        background-color: #007bff;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        font-size: 0.8rem;
+        color: #777;
+    }
+    
+    .login-form {
+        display: block;
+        margin-bottom: 20px;
+    }
+
+    .login-input {
+        margin-bottom: 10px;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <form class="login-form">
+            <label for="username" class="login-input">Username: </label>
+            <input type="text" id="username" class="login-input" required>
+            <br>
+            <label for="pin" class="login-input">PIN: </label>
+            <input type="password" id="pin" class="login-input" required>
+            <br>
+            <button type="button" id="login-btn" class="button">Login</button>
+        </form>
+        <div class="header">
+            <img src="logo.png" alt="Bankist logo" class="logo">
+            <h1>Your name</h1>
+        </div>
+        <div class="balance">
+            <p>Current balance</p>
+            <p class="amount">0000&nbsp;€</p>
+        </div>
+        <div class="transaction-list">
+            <p class="title">Recent transactions</p>
+            <ul class="items">
+                <li class="item">
+                    <p class="date">05/03/2007</p>
+                    <p class="description out">0000&nbsp;€ OUT</p>
+                    <p class="value">0000&nbsp;€</p>
+                </li>
+                <li class="item">
+                    <p class="date">05/03/2007</p>
+                    <p class="description in">88&nbsp;in</p>
+                    <p class="value">4000&nbsp;€</p>
+                </li>
+                <li class="item">
+                    <p class="date">05/03/2007</p>
+                    <p class="description out">-378&nbsp;€ OUT</p>
+                    <p class="value">0000&nbsp;€</p>
+                </li>
+            </ul>
+        </div>
+        <div class="buttons">
+            <button class="button transfer">Transfer</button>
+            <button class="button loan">Request loan</button>
+            <button class="button close">Close account</button>
+        </div>
+        <div class="footer">
+            <p>&copy; 2023 Bankist. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+<script>
+    // script.js
+    let currentUser;
+        let timer;
+
+        const loginForm = document.querySelector('.login-form');
+        const accountsContainer = document.querySelector('.container');
+        const loginBtn = document.getElementById('login-btn');
+
+    // Example accounts
+    const accounts = [
+        {
+            owner: 'Phong',
+            movements: [200, 1000, 2000, -400, 70],
+            interestRate: 1.8,
+            pin: 1111
+        },
+        {
+            owner: 'Nguyen',
+            movements: [500, 300, 1000, 600],
+            interestRate: 1.4,
+            pin: 2222
+        },
+        {
+            owner: 'Viet',
+            movements: [300, -300, 2000, 700],
+            interestRate: 0.4,
+            pin: 2222
+        }
+    ];
+
+    // Display login form initially
+    loginForm.style.display = 'block';
+
+    loginBtn.addEventListener('click', logIn);
+
+    function logIn() {
+            const usernameInput = document.getElementById('username');
+            const pinInput = document.getElementById('pin');
+
+            const username = usernameInput.value;
+            const pin = pinInput.value;
+
+            const user = accounts.find(account => account.owner === username && account.pin === parseInt(pin));
+
+            if (user) {
+                currentUser = user;
+                displayAccounts();
+                startLogoutTimer();
+            } else {
+                alert('Incorrect username or PIN. Please try again.');
+            }
+
+            usernameInput.value = '';
+            pinInput.value = '';
+        }
+    function displayAccounts() {
+        loginForm.style.display = 'none';
+        accountsContainer.style.display = 'flex';
+
+        // Clear existing accounts
+        accountsContainer.innerHTML = '';
+
+        // Display user account
+        displayAccount(currentUser);
+
+        // Display other accounts
+        accounts.filter(account => account !== currentUser).forEach(account => displayAccount(account));
+
+        // Display buttons for additional functionalities
+        const buttonsContainer = document.createElement('div');
+        buttonsContainer.classList.add('buttons');
+
+        const transferBtn = document.createElement('button');
+        transferBtn.classList.add('btn');
+        transferBtn.textContent = 'Transfer Money';
+        transferBtn.addEventListener('click', transferMoney);
+
+        const loanBtn = document.createElement('button');
+        loanBtn.classList.add('btn');
+        loanBtn.textContent = 'Request Loan';
+        loanBtn.addEventListener('click', requestLoan);
+
+        const sortBtn = document.createElement('button');
+        sortBtn.classList.add('btn');
+        sortBtn.textContent = 'Sort Movements';
+        sortBtn.addEventListener('click', sortMovements);
+
+        const closeAccountBtn = document.createElement('button');
+        closeAccountBtn.classList.add('btn');
+        closeAccountBtn.textContent = 'Close Account';
+        closeAccountBtn.addEventListener('click', closeAccount);
+
+        buttonsContainer.appendChild(transferBtn);
+        buttonsContainer.appendChild(loanBtn);
+        buttonsContainer.appendChild(sortBtn);
+        buttonsContainer.appendChild(closeAccountBtn);
+
+        accountsContainer.appendChild(buttonsContainer);
+    }
+
+    function displayAccount(account) {
+        const accountElement = document.createElement('div');
+        accountElement.classList.add('account');
+
+        const ownerHeading = document.createElement('h2');
+        ownerHeading.textContent = account.owner;
+
+        const transactionsList = document.createElement('ul');
+        transactionsList.classList.add('transactions');
+
+        account.movements.forEach(movement => {
+            const transactionItem = document.createElement('li');
+            transactionItem.classList.add('transaction');
+            transactionItem.textContent = `${movement} €`;
+            transactionsList.appendChild(transactionItem);
+        });
+
+        const balanceElement = document.createElement('p');
+        balanceElement.classList.add('balance');
+        balanceElement.textContent = `Balance: ${calculateBalance(account.movements)} €`;
+
+        accountElement.appendChild(ownerHeading);
+        accountElement.appendChild(transactionsList);
+        accountElement.appendChild(balanceElement);
+
+        accountsContainer.appendChild(accountElement);
+    }
+
+    function calculateBalance(movements) {
+        return movements.reduce((acc, movement) => acc + movement, 0);
+    }
+
+    function startLogoutTimer() {
+        clearInterval(timer);
+
+        let timeLeft = 300; // 5 minutes
+        const logoutTimer = document.createElement('p');
+        logoutTimer.classList.add('logout-timer');
+        accountsContainer.appendChild(logoutTimer);
+
+        timer = setInterval(() => {
+            timeLeft--;
+            logoutTimer.textContent = `Logout in ${formatTime(timeLeft)}`;
+
+            if (timeLeft === 0) {
+                clearInterval(timer);
+                logOut();
+            }
+        }, 1000);
+    }
+
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+
+    // Khi đăng xuất, ẩn các form
+    function logOut() {
+        clearInterval(timer);
+        currentUser = undefined;
+        loginForm.style.display = 'block';
+        accountsContainer.style.display = 'none';
+
+        // Ẩn form chuyển tiền và vay tiền
+        transferForm.style.display = 'none';
+        loanForm.style.display = 'none';
+
+        alert('You have been logged out.');
+    }
+
+    function transferMoney() {
+        const recipientNameInput = document.getElementById('recipient-name');
+        const amountInput = document.getElementById('amount');
+
+        const recipientName = recipientNameInput.value;
+        const amount = parseFloat(amountInput.value);
+
+        if (isNaN(amount) || amount <= 0) {
+            alert('Please enter a valid amount.');
+            return;
+        }
+
+        const recipient = accounts.find(account => account.owner === recipientName);
+
+        if (!recipient) {
+            alert('Recipient not found.');
+            return;
+        }
+
+        const confirmTransfer = confirm(`Transfer ${amount} € to ${recipientName}?`);
+
+        if (confirmTransfer) {
+            currentUser.movements.push(-amount);
+            recipient.movements.push(amount);
+            displayAccounts();
+        }
+
+        // Clear input fields
+        recipientNameInput.value = '';
+        amountInput.value = '';
+    }
+
+    function requestLoan() {
+        const amountInput = document.getElementById('loan-amount');
+        const amount = parseFloat(amountInput.value);
+
+        if (isNaN(amount) || amount <= 0) {
+            alert('Please enter a valid loan amount.');
+            return;
+        }
+
+        const depositThreshold = 0.1 * calculateBalance(currentUser.movements);
+
+        if (amount <= depositThreshold) {
+            alert('Loan request approved!');
+            currentUser.movements.push(amount);
+            displayAccounts();
+        } else {
+            alert('Loan request denied. Insufficient deposit for loan amount.');
+        }
+
+        // Clear input field
+        amountInput.value = '';
+    }
+
+    function sortMovements() {
+        const confirmSort = confirm('Do you want to sort movements?');
+
+        if (confirmSort) {
+            currentUser.movements.sort((a, b) => a - b);
+            displayAccounts();
+        }
+    }
+
+    function closeAccount() {
+        const confirmClose = confirm('Are you sure you want to close your account?');
+
+        if (confirmClose) {
+            accounts.splice(accounts.indexOf(currentUser), 1);
+            logOut(); // Log out after closing the account
+        }
+    }
+
+</script>
+
+</html>
